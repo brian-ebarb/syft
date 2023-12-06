@@ -34,6 +34,7 @@ import (
 	"github.com/anchore/syft/syft/pkg/cataloger/ruby"
 	"github.com/anchore/syft/syft/pkg/cataloger/rust"
 	"github.com/anchore/syft/syft/pkg/cataloger/sbom"
+	"github.com/anchore/syft/syft/pkg/cataloger/static_binary"
 	"github.com/anchore/syft/syft/pkg/cataloger/swift"
 )
 
@@ -99,6 +100,7 @@ func DirectoryCatalogers(cfg Config) []pkg.Cataloger {
 		sbom.NewCataloger(),
 		swift.NewCocoapodsCataloger(),
 		swift.NewSwiftPackageManagerCataloger(),
+		static_binary.NewStaticBinaryPackageCataloger(cfg.StaticBinary),
 	}, cfg.Catalogers)
 }
 
@@ -144,6 +146,7 @@ func AllCatalogers(cfg Config) []pkg.Cataloger {
 		sbom.NewCataloger(),
 		swift.NewCocoapodsCataloger(),
 		swift.NewSwiftPackageManagerCataloger(),
+		static_binary.NewStaticBinaryPackageCataloger(cfg.StaticBinary),
 	}, cfg.Catalogers)
 }
 
