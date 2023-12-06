@@ -42,6 +42,10 @@ func encodeComponent(p pkg.Package) cyclonedx.Component {
 		componentType = cyclonedx.ComponentTypeApplication
 	}
 
+	if p.Type == pkg.StaticBinaryPkg {
+		componentType = cyclonedx.ComponentTypeApplication
+	}
+
 	return cyclonedx.Component{
 		Type:               componentType,
 		Name:               p.Name,

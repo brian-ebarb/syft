@@ -19,6 +19,7 @@ import (
 	javascriptCataloger "github.com/anchore/syft/syft/pkg/cataloger/javascript"
 	"github.com/anchore/syft/syft/pkg/cataloger/kernel"
 	pythonCataloger "github.com/anchore/syft/syft/pkg/cataloger/python"
+	staticBinaryCataloger "github.com/anchore/syft/syft/pkg/cataloger/static_binary"
 	"github.com/anchore/syft/syft/source"
 )
 
@@ -30,6 +31,7 @@ type Catalog struct {
 	Javascript                      javascript   `yaml:"javascript" json:"javascript" mapstructure:"javascript"`
 	LinuxKernel                     linuxKernel  `yaml:"linux-kernel" json:"linux-kernel" mapstructure:"linux-kernel"`
 	Python                          python       `yaml:"python" json:"python" mapstructure:"python"`
+	StaticBinary                    staticBinary `yaml:"static-binary" json:"static-binary" mapstructure:"static-binary"`
 	FileMetadata                    fileMetadata `yaml:"file-metadata" json:"file-metadata" mapstructure:"file-metadata"`
 	FileContents                    fileContents `yaml:"file-contents" json:"file-contents" mapstructure:"file-contents"`
 	Registry                        registry     `yaml:"registry" json:"registry" mapstructure:"registry"`
@@ -150,6 +152,13 @@ func (cfg Catalog) ToCatalogerConfig() cataloger.Config {
 		Javascript: javascriptCataloger.DefaultCatalogerConfig().
 			WithSearchRemoteLicenses(cfg.Javascript.SearchRemoteLicenses).
 			WithNpmBaseURL(cfg.Javascript.NpmBaseURL),
+		StaticBinary: staticBinaryCataloger.NewStaticBinaryCatalogerOpts().
+			WithScanDepth(cfg.StaticBinary.ScanDepth).
+			WithLocalLibDir(cfg.StaticBinary.LocalSharedLibDir).
+			WithLocalLicenseDir(cfg.StaticBinary.LocalLicenseDir).
+			WithUserTemplates(cfg.StaticBinary.UserTemplateRegex,
+				cfg.StaticBinary.UserTemplateNamespace,
+				cfg.StaticBinary.UserTemplateVersion),
 		Python: pythonCataloger.CatalogerConfig{
 			GuessUnpinnedRequirements: cfg.Python.GuessUnpinnedRequirements,
 		},
