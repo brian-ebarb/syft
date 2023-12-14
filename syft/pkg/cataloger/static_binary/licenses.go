@@ -1,7 +1,7 @@
 package static_binary
 
 import (
-	"fmt"
+	//"fmt"
 	"os"
 	"path"
 	"strings"
@@ -13,7 +13,6 @@ import (
 
 type staticLicenses struct {
 	opts StaticBinaryCatalogerOpts
-	//progress *monitor.CatalogerTask
 }
 
 func newStaticLicenses(opts StaticBinaryCatalogerOpts) staticLicenses {
@@ -24,8 +23,6 @@ func newStaticLicenses(opts StaticBinaryCatalogerOpts) staticLicenses {
 
 func (c *staticLicenses) getLicenses(resolver file.Resolver, filename string, location file.Location) (licenses []pkg.License, err error) {
 
-	// 1st we need getLicenseFromOptionsPath first. THen if we don't find it, we check local
-	//var locations []file.Location
 	currentDir, _ := path.Split(string(location.Reference().RealPath))
 	if c.opts.localLicenseDir != nil {
 		getLicenseFromOptionsPath(c, resolver, filename, currentDir, c.opts.localLicenseDir)
@@ -47,7 +44,7 @@ func getLicenseFromOptionsPath(c *staticLicenses, resolver file.Resolver, globMa
 	for _, loc := range c.opts.localLicenseDir {
 		licenses, err = findLicenses(c, resolver, globMatch, loc)
 		if licenses != nil {
-			fmt.Printf("We found it in getLicenseFromOptionsPath! %v\n", globMatch)
+			//fmt.Printf("We found it in getLicenseFromOptionsPath! %v\n", globMatch)
 			return licenses, err
 		}
 
@@ -61,7 +58,7 @@ func getLicenseFromOptionsPath(c *staticLicenses, resolver file.Resolver, globMa
 
 func getLicensesFromLocal(c *staticLicenses, resolver file.Resolver, globMatch string, pathToCheck string) (out []pkg.License, err error) {
 
-	fmt.Printf("We found it in getLicensesFromLocal! %v\n", globMatch)
+	//fmt.Printf("We found it in getLicensesFromLocal! %v\n", globMatch)
 	return findLicenses(c, resolver, globMatch, pathToCheck)
 }
 
@@ -83,7 +80,7 @@ func findLicenses(c *staticLicenses, resolver file.Resolver, globMatch string, p
 			if name == fileName {
 				l := file.NewLocation(pathToCheck + fileName)
 
-				fmt.Printf("LICENSE FILENAME FOUND! %v\n", fileName)
+				//fmt.Printf("LICENSE FILENAME FOUND! %v\n", fileName)
 
 				contents, err := resolver.FileContentsByLocation(l)
 				if err != nil {

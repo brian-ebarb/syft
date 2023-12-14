@@ -56,6 +56,7 @@ func (g StaticBinaryCatalogerOpts) WithUserTemplates(patterns []string, namespac
 	}
 	templates := []userMatchTemplates{}
 	for i, pattern := range patterns {
+
 		template := userMatchTemplates{
 			pattern:   pattern,
 			namespace: namespaces[i],

@@ -27,9 +27,7 @@ func scanFile(c *staticBinaryCataloger, reader unionreader.UnionReader, filename
 		log.WithFields("file", filename, "error", err).Trace("unable to read binary")
 		return bi, nil, err
 	}
-	//br is our byte reader
 	br := bytes.NewReader(bi)
-	//make a new elf file we can play with
 	e, err := elf.NewFile(br)
 	if e != nil {
 
@@ -39,7 +37,7 @@ func scanFile(c *staticBinaryCataloger, reader unionreader.UnionReader, filename
 			symbols = nil
 		}
 
-		//notes will be the raw data pulled from the section
+		//noteSection will be the raw data pulled from the section
 		noteSection := e.Section(".note.package")
 		if noteSection != nil {
 			notes, err := noteSection.Data()
@@ -66,7 +64,6 @@ func scanFile(c *staticBinaryCataloger, reader unionreader.UnionReader, filename
 
 			b, _ := json.Marshal(data)
 
-			//fmt.Printf("ver: %v\n", filename)
 			return b, symbols, err
 		}
 	}
@@ -96,22 +93,16 @@ func getLibFile(c *staticBinaryCataloger, symbol string) (*os.File, error) {
 		libPath = "/lib64/"
 		f, fileErr_ = os.Open(libPath + symbol)
 		if fileErr_ != nil {
-			//then we try ld_library_path variable
-			libPath = os.Getenv("LD_LIBRARY_PATH")
-			f, fileErr_ = os.Open(libPath + symbol)
-			if fileErr_ != nil {
-				//last we try the options path
-				libPaths := c.licenses.opts.localSharedLibDir
-				for _, libPath := range libPaths {
-					//TODO: This feels wrong. We either return a file or an error. I don't know if we should return if its an error until
-					//we have finished the loop.
-					f, fileErr_ = os.Open(libPath + symbol)
-					if fileErr_ == nil {
-						return f, fileErr_
-					}
+			//last we try the options path
+			libPaths := c.licenses.opts.localSharedLibDir
+			for _, libPath := range libPaths {
+				f, fileErr_ = os.Open(libPath + symbol)
+				if fileErr_ == nil {
+					return f, fileErr_
 				}
 			}
 		}
+
 	}
 	return f, fileErr_
 }
@@ -128,17 +119,6 @@ func fileNameTemplateVersionMatcher(c *staticBinaryCataloger, filename string) (
 	//Now get the filename without the extension
 	loc = []int{0, len(filename)}
 	fileNamePattern := strings.Split(filename[loc[0]:], ".so")[0]
-	//fmt.Printf("filename %v\n", filename)
-	//Try to find our version after the .so in the filename first
-	// version := filename[strings.LastIndex(filename, ".")+1:]
-	// if version == "" {
-	// 	//Version wasn't a suffix. Now lets look for numbers
-	// 	//in the prefix of the filename
-	// 	re := regexp.MustCompile(`\d.*`)
-	// 	match := re.FindString(fileNamePattern)
-	// 	version = match
-	// }
-
 	templates := c.licenses.opts.templates
 	if templates != nil {
 		for _, template := range templates {
@@ -157,22 +137,12 @@ func fileNameTemplateVersionMatcher(c *staticBinaryCataloger, filename string) (
 		return version, namespace
 	}
 
-	//return version, ""
 }
-
-// func filePathTemplateVersionMatcher(fileNamePattern string, contentTemplates []string) (string, string) {
-// 	// for _, template := range contentTemplates {
-
-// 	// }
-
-// 	return "", ""
-// }
 
 func checkKnownPatterns(filename string) (string, string) {
 	var namespace string
 	loc := []int{0, len(filename)}
 	fileNamePattern := strings.Split(filename[loc[0]:], ".so")[0]
-	//fmt.Printf("filename %v\n", filename)
 	//Try to find our version after the .so in the filename first
 	version := filename[strings.LastIndex(filename, ".")+1:]
 	if version == "" {
